@@ -1,0 +1,6 @@
+{
+  "singleQuote": true,
+  "proseWrap": "never",
+  "jsxSingleQuote": true,
+  "endOfLine": "lf"
+}
