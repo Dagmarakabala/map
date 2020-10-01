@@ -22,7 +22,7 @@ const Map1 = {
     };
   },
   createMap() {
-    const options = { libraries: ['places'] };
+    const options = { libraries: ['places', 'directions'] };
     const loader = new Loader(
       'AIzaSyB2QMtNLSZeRvzwLz-B6x-4Fbtd9REkDmg',
       options
@@ -61,8 +61,8 @@ const Map1 = {
         title: 'second marker'
       });
       const input = $('.map__search');
-      const searchBox = new google.maps.places.SearchBox(input);
-      map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+      const searchBox = new google.maps.places.SearchBox(input[0]);
+      map.controls[google.maps.ControlPosition.TOP_LEFT].push(input[0]);
       map.addListener('bounds_changed', () => {
         searchBox.setBounds(map.getBounds());
       });
@@ -84,11 +84,11 @@ const Map1 = {
             return;
           }
           const icon = {
-            url: place.icon,
+            url: './assets/images/Map/null.png',
             size: new google.maps.Size(71, 71),
             origin: new google.maps.Point(0, 0),
             anchor: new google.maps.Point(17, 34),
-            scaledSize: new google.maps.Size(25, 25)
+            scaledSize: new google.maps.Size(40, 40)
           };
           markers.push(
             new google.maps.Marker({
@@ -105,6 +105,25 @@ const Map1 = {
           }
         });
         map.fitBounds(bounds);
+        let directionsRenderer = new google.maps.DirectionsRenderer();
+        let directionsService = new google.maps.DirectionsService();
+        directionsRenderer.setMap(map);
+        const selectedMode = 'DRIVING';
+        directionsService.route(
+          {
+            origin: markers[0].position,
+            destination: { lat: 53.744, lng: 20.4564 },
+            travelMode: google.maps.TravelMode[selectedMode]
+          },
+          (response, status) => {
+            if (status == 'OK') {
+              response.request.origin.img = './assets/images/Map/marker.png';
+              directionsRenderer.setDirections(response);
+            } else {
+              window.alert('Directions request failed due to ' + status);
+            }
+          }
+        );
       });
     });
   }
