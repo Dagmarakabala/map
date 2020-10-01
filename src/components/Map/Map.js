@@ -84,7 +84,7 @@ const Map1 = {
             return;
           }
           const icon = {
-            url: './assets/images/Map/null.png',
+            url: './assets/images/Map/marker.png',
             size: new google.maps.Size(71, 71),
             origin: new google.maps.Point(0, 0),
             anchor: new google.maps.Point(17, 34),
@@ -105,7 +105,9 @@ const Map1 = {
           }
         });
         map.fitBounds(bounds);
-        let directionsRenderer = new google.maps.DirectionsRenderer();
+        let directionsRenderer = new google.maps.DirectionsRenderer({
+          suppressMarkers: true
+        });
         let directionsService = new google.maps.DirectionsService();
         directionsRenderer.setMap(map);
         const selectedMode = 'DRIVING';
@@ -115,15 +117,23 @@ const Map1 = {
             destination: { lat: 53.744, lng: 20.4564 },
             travelMode: google.maps.TravelMode[selectedMode]
           },
+
           (response, status) => {
             if (status == 'OK') {
-              response.request.origin.img = './assets/images/Map/marker.png';
               directionsRenderer.setDirections(response);
+              let leg = response.routes[0].legs[0];
+              const markerEnd = new google.maps.Marker({
+                position: leg.end_location,
+                map: map,
+                icon: './assets/images/Map/marker.png',
+                title: 'start'
+              });
             } else {
               window.alert('Directions request failed due to ' + status);
             }
           }
         );
+        //markers[0].setMap(null);
       });
     });
   }
